@@ -22,6 +22,7 @@ def get_weather_data_for_latlong(lat, lon):
 
     return {
         "temp": floor(convert_temperature(data["main"]["temp"], 'Kelvin', 'Celsius')),
+        "location": data["name"],
         "weather": data["weather"][0]["main"],
         "weather_icon": data["weather"][0]["icon"]
     }
