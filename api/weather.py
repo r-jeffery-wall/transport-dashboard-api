@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from dotenv import load_dotenv
 from scipy.constants import convert_temperature
 from math import floor
