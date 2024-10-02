@@ -1,5 +1,5 @@
 from transport.tfl_bus import get_bus_stop_name
-from transport.tfl_common import get_departures
+from transport.tfl_common import get_tfl_departures
 from transport.tfl_tube import get_tube_station_name
 from transport.rtt_train import get_train_departures_for_station_code
 from date_time import get_date_time_string
@@ -18,7 +18,6 @@ def main_api_getters(settings): # This function will take the API request and re
 
 def get_stop_data(stop_type, id): #Takes a stop object and grabs the data from the relevant API.
     # We will determine what API to use based on the 'type' variable of the stop.
-    print(stop_type, id)
     if stop_type == 'train':
         return {
             "type": 'train',
@@ -29,7 +28,7 @@ def get_stop_data(stop_type, id): #Takes a stop object and grabs the data from t
             'type': 'tfl_bus',
             'data': {
                 'name': get_bus_stop_name(id),
-                'departures': get_departures(id)
+                'departures': get_tfl_departures(id)
         }
     }
     elif stop_type == 'tfl_tube':
@@ -37,7 +36,7 @@ def get_stop_data(stop_type, id): #Takes a stop object and grabs the data from t
             'type': 'tfl_tube',
             'data': {
                 'name': get_tube_station_name(id),
-                'departures': get_departures(id)
+                'departures': get_tfl_departures(id)
         }
     }
     # We can continue adding other types of stop here...

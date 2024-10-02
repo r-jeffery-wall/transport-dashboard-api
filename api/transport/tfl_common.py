@@ -12,7 +12,7 @@ class TfLArrival(object):
 base_url = "https://api.tfl.gov.uk/StopPoint/"
 
 # This module contains common functions for accessing the TfL API.
-def get_departures(stop):
+def get_tfl_departures(stop):
     request_url = base_url + stop + "/Arrivals"
 
     request = requests.get(request_url)
@@ -46,6 +46,6 @@ def format_predicted_time(arrival_time):
 # For testing:
 if __name__ == "__main__":
     print("Bus:")
-    print(get_departures("490000173RG"))
+    print(get_tfl_departures("490000173RG"))
     print("Tube:")
-    print(get_departures("940GZZLUOVL"))
+    print(get_tfl_departures("940GZZLUOVL"))
