@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from dotenv import load_dotenv
 import requests
-import json
 import os
 
 @dataclass
