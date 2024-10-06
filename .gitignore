@@ -137,3 +137,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 pyrightconfig.json
+api/dashboard.svg
