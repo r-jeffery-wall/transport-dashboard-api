@@ -36,6 +36,6 @@ async def root():
     </pre>
     """)
 
-@app.post("/")
+@app.post("/RawData")
 async def get_data(query_settings: Settings):
     return main_api_getters(query_settings)
