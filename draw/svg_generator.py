@@ -9,9 +9,9 @@ def draw_dashboard(JSON_data):
     # Set up basic layout.
     # Variables
     status_line = (0, height * 0.2, width, height * 0.2)
-    weather_divider = (width * 0.55, 0, width * 0.55, height * 0.2)
+    weather_divider = (width * 0.65, 0, width * 0.65, height * 0.2)
     grid_vertical = (width / 2, height * 0.2, width / 2, height)
-    grid_horizontal = (0, height / 2, width, height / 2)
+    grid_horizontal = (0, height * 0.6, width, height * 0.6)
     date_time_y = height * 0.1
     # Draw layout
     dashboard.append(draw.Line(status_line[0], status_line[1], status_line[2], status_line[3], stroke='black', stroke_width=2))
@@ -22,7 +22,19 @@ def draw_dashboard(JSON_data):
     # Print Date and Time
     dashboard.append(draw.Text(JSON_data['date_time'], 24, 5, date_time_y, text_anchor='start', fill='black'))
 
+    #Print weather
+    dashboard.append(draw_weather(weather_divider[0], JSON_data['weather']))
+
 
     dashboard.save_svg('dashboard.svg')
     return 
 
+def draw_weather(weather_divider_pos,weather_settings):
+    weather = draw.Group(fill='black')
+
+    weather.append(draw.Text(weather_settings['location'], 16, weather_divider_pos + 60, 20, text_anchor='center'))
+    weather.append(draw.Image(weather_divider_pos + 75, 15, 64, 64, path=f"http://openweathermap.org/img/w/{weather_settings['weather_icon']}.png"))
+    weather.append(draw.Text(str(weather_settings['temp']) + '°C', 16, weather_divider_pos + 160, 50, text_anchor='start'))
+    weather.append(draw.Text(weather_settings['weather'], 12, weather_divider_pos + 110, 80, text_anchor='center'))
+
+    return weather
