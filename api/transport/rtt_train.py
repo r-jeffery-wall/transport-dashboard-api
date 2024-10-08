@@ -44,7 +44,7 @@ def parse_train_departure_json(json): #Parses the JSON data from RTT api into an
         if not arrival["isPassenger"]: # Non-passenger services are skipped
             continue
         if arrival["serviceType"] == "train":
-            operator_name = arrival["atocName"]
+            operator_name = arrival["atocCode"]
             destination = arrival["locationDetail"]["destination"][0]["description"]
             departure_time = format_departure_time(arrival["locationDetail"]["realtimeDeparture"])
         elif arrival["serviceType"] == "bus":
