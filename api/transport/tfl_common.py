@@ -18,6 +18,8 @@ def get_tfl_departures(stop):
     request = requests.get(request_url)
     data = request.json()
 
+    data.sort(key=lambda x: x['timeToStation'], reverse=False) # This sorts the list in ascending order by arrival time.
+
     return parse_departure_json(data)
 
 
@@ -27,7 +29,6 @@ def parse_departure_json(json): #Parses the JSON data from TFL API into an objec
     for prediction in json:
         arrivals.append(TfLArrival(prediction["lineName"], prediction["destinationName"], format_predicted_time(prediction["timeToStation"])))
 
-    arrivals.sort(key=lambda x: x.time_to_arrival, reverse=False) # This sorts the list in ascending order by arrival time.
 
     return arrivals
 

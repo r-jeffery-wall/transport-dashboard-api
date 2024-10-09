@@ -14,6 +14,10 @@ def draw_dashboard(JSON_data):
     grid_horizontal = (0, height * 0.6, width, height * 0.6)
     date_time_y = height * 0.1
     stop_1 = (0, status_line[1] + 2) 
+    stop_2 = (grid_vertical[0], status_line[1] + 2)
+    stop_3 = (0, grid_horizontal[1] + 2)
+    stop_4 = (grid_vertical[0], grid_horizontal[1] + 2)
+    
     # Draw layout
     dashboard.append(draw.Line(status_line[0], status_line[1], status_line[2], status_line[3], stroke='black', stroke_width=2))
     dashboard.append(draw.Line(weather_divider[0], weather_divider[1], weather_divider[2], weather_divider[3], stroke='black', stroke_width=2))
@@ -28,6 +32,16 @@ def draw_dashboard(JSON_data):
 
     # Stop 1
     dashboard.append(draw_departure_information_for_stop(stop_1[0], stop_1[1], JSON_data['stops'][0]))
+
+    # Stop 2
+    dashboard.append(draw_departure_information_for_stop(stop_2[0], stop_2[1], JSON_data['stops'][1]))
+
+    # Stop 3
+    dashboard.append(draw_departure_information_for_stop(stop_3[0], stop_3[1], JSON_data['stops'][2]))
+
+    # Stop 4
+    dashboard.append(draw_departure_information_for_stop(stop_4[0], stop_4[1], JSON_data['stops'][3]))
+
     dashboard.save_svg('dashboard.svg')
     return 
 
@@ -47,26 +61,52 @@ def draw_departure_information_for_stop(start_x, start_y, stop): # This function
     header_line = (start_x, start_y + 30, start_x + 324, start_y + 30)
     departures_start_x = start_x + 3
     departures_start_y = header_line[1] + 17
+    header_x, header_y = start_x + 5, start_y + 20
     # Draw basic layout.
     departure_info.append(draw.Line(header_line[0], header_line[1], header_line[2], header_line[3], stroke='black', stroke_width=2))
 
-    if stop['type'] == 'train':
-        departure_info.append(draw_station_header(start_x + 5, start_y + 20, stop['data'].station_name, "https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/042012/500px-national_rail_logo.svg_.png?itok=pKr_e9Hq"))
+    if not stop:
+        departure_info.append(draw.Text("No stop information provided!", 14, header_x, header_y, text_anchor='start'))
+    elif stop['type'] == 'train':
+        departure_info.append(draw_station_header(header_x, header_y, stop['data'].station_name, "https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/042012/500px-national_rail_logo.svg_.png?itok=pKr_e9Hq"))
+        if len(stop['data'].departures) == 0:
+            departure_info.append(no_departures(departures_start_x, departures_start_y))
         departure_y = departures_start_y
         for departure in stop['data'].departures:
             departure_info.append(draw_departure(departures_start_x, departure_y, departure.operator, departure.destination, departure.departure_time))
             departure_y += 15
-
+    elif stop['type'] == 'tfl_bus':
+        departure_info.append(draw_station_header(header_x, header_y, stop['data']['name'], "https://img.icons8.com/?id=9351"))
+        if len(stop['data']['departures']) == 0:
+            departure_info.append(no_departures(departures_start_x, departures_start_y))
+        departure_y = departures_start_y
+        for departure in stop['data']['departures']:
+            departure_info.append(draw_departure(departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival))
+            departure_y += 15
+    elif stop['type'] == 'tfl_tube':
+        departure_info.append(draw_station_header(header_x, header_y, stop['data']['name'], "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Underground_%28no_text%29.svg/500px-Underground_%28no_text%29.svg.png?20230807202523"))
+        if len(stop['data']['departures']) == 0:
+            departure_info.append(no_departures(departures_start_x, departures_start_y))
+        departure_y = departures_start_y
+        for departure in stop['data']['departures']:
+            departure_info.append(draw_departure(departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival))
+            departure_y += 15
         
 
     return departure_info
 
+def no_departures(x_pos, y_pos):
+    message = draw.Group(fill='black')
+
+    message.append(draw.Text("There are currently no scheduled departures!", 14, x_pos, y_pos, text_anchor='start'))
+
+    return message
 
 def draw_station_header(x_pos, y_pos, station_name, path_to_logo):
     header = draw.Group(fill='black')
 
     header.append(draw.Text(station_name, 16, x_pos, y_pos, text_anchor='start'))
-    header.append(draw.Image(x_pos + 295, y_pos - 20, 28, 28, path=path_to_logo))
+    header.append(draw.Image(x_pos + 290, y_pos - 20, 28, 28, path=path_to_logo))
 
     return header
 
@@ -84,9 +124,9 @@ if __name__ == "__main__":
     draw_dashboard({
     "width": 648,
     "height": 480,
-    "date_time": "Tuesday 8 October 2024  20:09",
+        "date_time": "Wednesday 9 October 2024  21:06",
     "weather": {
-        "temp": 14,
+        "temp": 13,
         "location": "London",
         "weather": "Clouds",
         "weather_icon": "04n"
@@ -101,54 +141,114 @@ if __name__ == "__main__":
                     {
                         "operator": "LM",
                         "destination": "Lichfield Trent Valley",
-                        "departure_time": "20:22"
+                        "departure_time": "21:08"
+                    },
+                    {
+                        "operator": "VT",
+                        "destination": "Crewe",
+                        "departure_time": "21:07"
                     },
                     {
                         "operator": "LM",
                         "destination": "Wolverhampton",
-                        "departure_time": "20:11"
-                    },
-                    {
-                        "operator": "XC",
-                        "destination": "Plymouth",
-                        "departure_time": "20:12"
-                    },
-                    {
-                        "operator": "LM",
-                        "destination": "Rugeley Trent Valley",
-                        "departure_time": "20:15"
-                    },
-                    {
-                        "operator": "LM",
-                        "destination": "Redditch",
-                        "departure_time": "20:15"
-                    },
-                    {
-                        "operator": "LM",
-                        "destination": "Four Oaks",
-                        "departure_time": "20:16"
+                        "departure_time": "21:11"
                     },
                     {
                         "operator": "VT",
                         "destination": "London Euston",
-                        "departure_time": "20:21"
+                        "departure_time": "21:27"
                     },
                     {
                         "operator": "XC",
-                        "destination": "Cambridge",
-                        "departure_time": "20:22"
-                    },
-                    {
-                        "operator": "AW",
-                        "destination": "Aberystwyth",
-                        "departure_time": "20:22"
+                        "destination": "Bristol Temple Meads",
+                        "departure_time": "22:08"
                     },
                     {
                         "operator": "LM",
-                        "destination": "Bromsgrove",
-                        "departure_time": "20:23"
+                        "destination": "Redditch",
+                        "departure_time": "21:15"
+                    },
+                    {
+                        "operator": "LM",
+                        "destination": "Rugeley Trent Valley",
+                        "departure_time": "21:15"
+                    },
+                    {
+                        "operator": "LM",
+                        "destination": "Northampton",
+                        "departure_time": "21:15"
+                    },
+                    {
+                        "operator": "LM",
+                        "destination": "Four Oaks",
+                        "departure_time": "21:16"
+                    },
+                    {
+                        "operator": "AW",
+                        "destination": "Chester",
+                        "departure_time": "21:22"
                     }
                 ]
+            }
+        },
+        {
+            "type": "tfl_bus",
+            "data": {
+                "name": "Oxford Circus Station (RG)",
+                "departures": [
+                    {
+                        "line": "22",
+                        "destination": "Putney Common",
+                        "time_to_arrival": "14"
+                    },
+                    {
+                        "line": "22",
+                        "destination": "Putney Common",
+                        "time_to_arrival": "2"
+                    },
+                    {
+                        "line": "139",
+                        "destination": "Waterloo Station",
+                        "time_to_arrival": "20"
+                    },
+                    {
+                        "line": "94",
+                        "destination": "Piccadilly Circus",
+                        "time_to_arrival": "21"
+                    },
+                    {
+                        "line": "94",
+                        "destination": "Piccadilly Circus",
+                        "time_to_arrival": "24"
+                    },
+                    {
+                        "line": "22",
+                        "destination": "Putney Common",
+                        "time_to_arrival": "25"
+                    },
+                    {
+                        "line": "94",
+                        "destination": "Piccadilly Circus",
+                        "time_to_arrival": "27"
+                    },
+                    {
+                        "line": "139",
+                        "destination": "Waterloo Station",
+                        "time_to_arrival": "6"
+                    },
+                    {
+                        "line": "94",
+                        "destination": "Oxford Circus",
+                        "time_to_arrival": "6"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "tfl_tube",
+            "data": {
+                "name": "Oval ",
+                "departures": []
             }
         }
     ]
