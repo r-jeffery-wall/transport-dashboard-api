@@ -12,7 +12,7 @@ def get_bus_stop_name(stop):
     data = request.json()
 
     if data["stopLetter"]:
-        return f"{data["commonName"]} ({data["stopLetter"]})"
+        return f"{data['commonName']} ({data['stopLetter']})"
     return data["commonName"]
 
 # For testing:
