@@ -5,6 +5,7 @@ import drawsvg as draw
 def draw_dashboard(JSON_data):
     width, height = JSON_data['width'], JSON_data['height']
     dashboard = draw.Drawing(width, height, origin='top-left')
+    dashboard.append(draw.Rectangle(0, 0, width, height, fill='#FFF'))
 
     # Set up basic layout.
     # Variables
