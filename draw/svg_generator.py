@@ -1,6 +1,9 @@
 import drawsvg as draw
+import os
 
 # This module will handle the drawing of the final image from the JSON data.
+
+img_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'img')
 
 def draw_dashboard(JSON_data):
     width, height = JSON_data['width'], JSON_data['height']
@@ -50,7 +53,7 @@ def draw_weather(weather_divider_pos,weather_settings):
     weather = draw.Group(fill='black')
 
     weather.append(draw.Text(weather_settings['location'], 16, weather_divider_pos + 60, 20, text_anchor='center'))
-    weather.append(draw.Image(weather_divider_pos + 75, 15, 64, 64, path=f"http://openweathermap.org/img/w/{weather_settings['weather_icon']}.png"))
+    weather.append(draw.Image(weather_divider_pos + 75, 15, 64, 64, path=os.path.join(img_dir, "OpenWeather", f"{weather_settings['weather_icon']}.png")))
     weather.append(draw.Text(str(weather_settings['temp']) + '°C', 16, weather_divider_pos + 160, 50, text_anchor='start'))
     weather.append(draw.Text(weather_settings['weather'], 12, weather_divider_pos + 110, 80, text_anchor='center'))
 
@@ -69,7 +72,7 @@ def draw_departure_information_for_stop(start_x, start_y, stop): # This function
     if not stop:
         departure_info.append(draw.Text("No stop information provided!", 14, header_x, header_y, text_anchor='start'))
     elif stop['type'] == 'train':
-        departure_info.append(draw_station_header(header_x, header_y, stop['data'].station_name, "https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-thumbnail/s3/042012/500px-national_rail_logo.svg_.png?itok=pKr_e9Hq"))
+        departure_info.append(draw_station_header(header_x, header_y, stop['data'].station_name, "NatRail"))
         if len(stop['data'].departures) == 0:
             departure_info.append(no_departures(departures_start_x, departures_start_y))
         departure_y = departures_start_y
@@ -77,7 +80,7 @@ def draw_departure_information_for_stop(start_x, start_y, stop): # This function
             departure_info.append(draw_departure(departures_start_x, departure_y, departure.operator, departure.destination, departure.departure_time))
             departure_y += 15
     elif stop['type'] == 'tfl_bus':
-        departure_info.append(draw_station_header(header_x, header_y, stop['data']['name'], "https://img.icons8.com/?id=9351"))
+        departure_info.append(draw_station_header(header_x, header_y, stop['data']['name'], "bus"))
         if len(stop['data']['departures']) == 0:
             departure_info.append(no_departures(departures_start_x, departures_start_y))
         departure_y = departures_start_y
@@ -85,7 +88,7 @@ def draw_departure_information_for_stop(start_x, start_y, stop): # This function
             departure_info.append(draw_departure(departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival))
             departure_y += 15
     elif stop['type'] == 'tfl_tube':
-        departure_info.append(draw_station_header(header_x, header_y, stop['data']['name'], "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Underground_%28no_text%29.svg/500px-Underground_%28no_text%29.svg.png?20230807202523"))
+        departure_info.append(draw_station_header(header_x, header_y, stop['data']['name'], "LondonUnderground"))
         if len(stop['data']['departures']) == 0:
             departure_info.append(no_departures(departures_start_x, departures_start_y))
         departure_y = departures_start_y
@@ -103,11 +106,11 @@ def no_departures(x_pos, y_pos):
 
     return message
 
-def draw_station_header(x_pos, y_pos, station_name, path_to_logo):
+def draw_station_header(x_pos, y_pos, station_name, logo_name):
     header = draw.Group(fill='black')
 
     header.append(draw.Text(station_name, 16, x_pos, y_pos, text_anchor='start'))
-    header.append(draw.Image(x_pos + 290, y_pos - 20, 28, 28, path=path_to_logo))
+    header.append(draw.Image(x_pos + 290, y_pos - 20, 28, 28, path=os.path.join(img_dir, f"{logo_name}.png")))
 
     return header
 
