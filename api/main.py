@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
 from .api_getters import main_api_getters
-from ..draw.svg_generator import draw_dashboard
+from ..draw.img_generator import draw_dashboard
 
 app = FastAPI()
 
@@ -27,7 +27,7 @@ async def root():
     return HTMLResponse("""
     <h1>Transport Dashboard API</h1>
     <p>This API generates data for a transport dashboard by pulling data from various transport APIs and generating an SVG file that can be displayed on various displays.</p>
-    <p>There are two endpoints: '/RawData' and '/SVG'. The first pulls data in JSON format that you can do what you like with, the second generates an SVG for display. Both endpoints respond to POST requests with the following request schema: </p>
+    <p>There are two endpoints: '/RawData' and '/PNG'. The first pulls data in JSON format that you can do what you like with, the second generates an PNG for display. Both endpoints respond to POST requests with the following request schema: </p>
     <pre>
     <code>
     {
@@ -49,7 +49,7 @@ async def root():
 async def get_data(query_settings: RawDataSettings):
     return main_api_getters(query_settings)
 
-@app.post("/SVG")
+@app.post("/PNG")
 async def generate_svg(query_settings: SVGSettings):
     main_data = main_api_getters(query_settings)
     request_data = {
@@ -59,6 +59,6 @@ async def generate_svg(query_settings: SVGSettings):
         'weather': main_data['weather'],
         'stops': main_data['stops']
     }
-    draw_dashboard(request_data) #This creates an SVG file in the current directory called 'dashboard.svg'
-    return FileResponse('dashboard.svg', media_type='image/svg+xml')
+    draw_dashboard(request_data) #This creates an SVG file in the current directory called 'dashboard.png'
+    return FileResponse('dashboard.png', media_type='image/png')
 
