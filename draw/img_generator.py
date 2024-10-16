@@ -12,6 +12,10 @@ font16 = ImageFont.truetype(os.path.join(img_dir, 'Font.ttc'), 16)
 font14 = ImageFont.truetype(os.path.join(img_dir, 'Font.ttc'), 14)
 font12 = ImageFont.truetype(os.path.join(img_dir, 'Font.ttc'), 12)
 
+# Colours
+white = (255, 255, 255)
+black = (0, 0, 0)
+
 # Images
 lunderground = Image.open(os.path.join(img_dir, 'LondonUnderground.png'))
 nat_rail = Image.open(os.path.join(img_dir, 'NatRail.png'))
@@ -19,7 +23,7 @@ bus = Image.open(os.path.join(img_dir, 'bus.png'))
 
 def draw_dashboard(JSON_data):
     width, height = JSON_data['width'], JSON_data['height']
-    dashboard = Image.new('1', (width, height), 255) # The base image is a white background with the specified height and width.
+    dashboard = Image.new('RGB', (width, height), white) # The base image is a white background with the specified height and width.
     draw = ImageDraw.Draw(dashboard)
 
     # Set up basic layout.
@@ -43,10 +47,10 @@ def draw_dashboard(JSON_data):
     draw.line(grid_horizontal, fill=0, width=2)
 
     # Print Date and Time
-    draw.text(date_time_pos, text=JSON_data['date_time'], font=font24, anchor="lm")
+    draw.text(date_time_pos, text=JSON_data['date_time'], font=font24, anchor="lm", fill=black)
 
     #Print weather
-    dashboard.paste(draw_weather(weather_dimensions, JSON_data['weather']), (weather_divider[0], 0))
+    dashboard.paste(draw_weather(weather_dimensions, JSON_data['weather']), (weather_divider[0] + 2, 0))
 
     # Stop 1
     dashboard.paste(draw_departure_information_for_stop(stop_dimensions, JSON_data['stops'][0]), stop_1)
@@ -65,30 +69,30 @@ def draw_dashboard(JSON_data):
     return 
 
 def draw_weather(dimensions,weather_settings):
-    weather = Image.new('1', dimensions, 255)
+    weather = Image.new('RGB', dimensions, white)
     draw = ImageDraw.Draw(weather)
     image = Image.open(os.path.join(img_dir, "OpenWeather", f"{weather_settings['weather_icon']}.png"))
 
-    draw.text((60, 20), text=weather_settings['location'], font=font16, anchor="mm")
-    weather.paste(image, (75, 15))
-    draw.text((160, 50), text=str(weather_settings['temp']) + '°C', font=font16, anchor="lm")
-    draw.text((110, 80), text=weather_settings['weather'], font=font12, anchor='mm')
+    draw.text((10, 15), text=weather_settings['location'], font=font16, anchor="lm", fill=black)
+    weather.paste(image, (75, 25))
+    draw.text((160, 50), text=str(weather_settings['temp']) + '°C', font=font16, anchor="lm", fill=black)
+    draw.text((100, 80), text=weather_settings['weather'], font=font12, anchor='mm', fill=black)
 
     return weather
 
 def draw_departure_information_for_stop(dimensions, stop): # This function takes a starting x/y coordinate and handles the drawing of one of the four sections of the stop grid.
-    departure_info = Image.new('1', dimensions, 255)
+    departure_info = Image.new('RGB', dimensions, white)
     draw = ImageDraw.Draw(departure_info)
     #Variables
-    header_line = (0, math.floor(dimensions[1] * 0.1), dimensions[0], math.floor(dimensions[1] * 0.1))
-    header_dimensions = (dimensions[0], math.floor(dimensions[1] * 0.08))
+    header_line = (0, math.floor(dimensions[1] * 0.21), dimensions[0], math.floor(dimensions[1] * 0.21))
+    header_dimensions = (dimensions[0], math.floor(dimensions[1] * 0.2))
     departures_start_x = 3
-    departures_start_y = header_line[1] + 17
+    departures_start_y = header_line[1] + 8
     # Draw basic layout.
     draw.line(header_line, fill=0, width=2)
 
     if not stop:
-        draw.text((5, 20), text="No stop information provided!", font=font14, anchor='lm')
+        draw.text((5, 20), text="No stop information provided!", font=font14, anchor='lm', fill=black)
     elif stop['type'] == 'train':
         departure_info.paste(draw_station_header(header_dimensions, stop['data'].station_name, nat_rail), (0, 0))
         if len(stop['data'].departures) == 0:
@@ -118,26 +122,26 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
     return departure_info
 
 def no_departures(dimensions):
-    message = Image.new('1', dimensions, 255)
+    message = Image.new('RGB', dimensions, white)
     draw = ImageDraw.Draw(message)
 
-    draw.text((3, 17), text="There are currently no scheduled departures!", font=font14, anchor="lm")
+    draw.text((3, 10), text="There are currently no scheduled departures!", font=font14, anchor="lm", fill=black)
 
     return message
 
 def draw_station_header(dimensions, station_name, logo):
-    header = Image.new('1', dimensions, 255)
+    header = Image.new('RGB', dimensions, white)
     draw = ImageDraw.Draw(header)
 
-    draw.text((5, 20), text=station_name, font=font16, anchor='lm')
-    header.paste(logo, (290, 10))
+    draw.text((5, 20), text=station_name, font=font16, anchor='lm', fill=black)
+    header.paste(logo, (280, 5))
 
     return header
 
 def draw_departure(draw, x_pos, y_pos, line, destination, time):
-    draw.text((x_pos, y_pos), text=line, font=font12, anchor='lm')
-    draw.text((x_pos + 125, y_pos), text=destination, font=font12, anchor='lm')
-    draw.text((x_pos + 280, y_pos), text=time, font=font12, anchor='lm')
+    draw.text((x_pos, y_pos), text=line, font=font12, anchor='lm', fill=black)
+    draw.text((x_pos + 85, y_pos), text=destination, font=font12, anchor='lm', fill=black)
+    draw.text((x_pos + 280, y_pos), text=time, font=font12, anchor='lm', fill=black)
 
 # For testing
 if __name__ == "__main__":
