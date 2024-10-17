@@ -11,7 +11,7 @@ def get_bus_stop_name(stop):
     request = requests.get(request_url)
     data = request.json()
 
-    if data["stopLetter"]:
+    if "stopLetter" in stop: #We will add the stop letter information if it is available.
         return f"{data['commonName']} ({data['stopLetter']})"
     return data["commonName"]
 
