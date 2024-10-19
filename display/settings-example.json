@@ -1,0 +1,21 @@
+{
+    "width": 648,  # The width of the display, other display sizes are not currently fully supported, change this at your own risk.
+    "height": 480, # The height of the display, other display sizes are not currently fully supported, change this at your own risk.
+    "lat_long": "",# Coordinates for the OpenWeather API.
+    "stops": [{ # A list of stops, there must be exactly 4.
+        "stop_type": "tfl_bus", # Stop type must correspond to one of the supported stop types for the API, or one that you have defined yourself.
+        "id": ""
+    },
+    {
+        "stop_type": "tfl_bus",
+        "id": ""
+    },
+    {
+        "stop_type": "tfl_tube",
+        "id": ""
+    },
+    {
+        "stop_type": "train",
+        "id": ""
+    }]
+}
