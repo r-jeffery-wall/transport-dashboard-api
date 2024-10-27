@@ -48,7 +48,7 @@ def parse_train_departure_json(json): #Parses the JSON data from RTT api into an
             destination = arrival["locationDetail"]["destination"][0]["description"]
             departure_time = format_departure_time(arrival["locationDetail"]["realtimeDeparture"])
         elif arrival["serviceType"] == "bus":
-            operator_name = "Rail Replacement"
+            operator_name = "Bus"
             destination = arrival["locationDetail"]["destination"][0]["description"]
             departure_time = format_departure_time(arrival["locationDetail"]["gbttBookedDeparture"])
         else: # 'serviceType' is not recognised. Functionality of this will need to be fleshed out.
