@@ -9,10 +9,6 @@ class TrainArrival(object):
     destination: str
     departure_time: str
 
-@dataclass
-class TrainDepartureBoard(object):
-    departures: list
-
 load_dotenv()
 # Env variables
 base_url = "https://api.rtt.io/api/v1/json/search/"
@@ -60,7 +56,7 @@ def parse_train_departure_json(json): #Parses the JSON data from RTT api into an
 
         departures.append(TrainArrival(operator_name, destination, departure_time))
 
-    return TrainDepartureBoard(departures)
+    return departures
 
 # For testing
 if __name__ == "__main__":

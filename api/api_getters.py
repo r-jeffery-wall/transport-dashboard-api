@@ -15,7 +15,6 @@ with open('./stop_info_cache.json', 'r') as file:
 def main_api_getters(settings): # This function will take the API request and return the JSON data that will be used to generate the SVG.
     lat, long = settings.lat_long.split(", ")
     stops = [get_stop_data(stop) for stop in settings.stops]
-    print(cache)
     write_cache_to_file(cache)
 
     return {
@@ -29,49 +28,62 @@ def get_stop_data(stop): #Takes a stop object and grabs the data from the releva
     found_stop =  find_stop_in_cache(stop.id)
     if found_stop:
         stop_info = found_stop
+
+        return {**stop_info, "departures": get_departures_for_stop(stop.id, stop.stop_type)}
     # If the stop is not in the cache we will call the API to get the information and then write it to the cache file.
     # We will determine what API to use based on the 'type' variable of the stop.
     else:
-        if stop.stop_type == 'train':
+        return get_stop_data_and_cache(stop.id, stop.stop_type)
+        
+
+def get_stop_data_and_cache(id, type):
+    if type == 'train':
             stop_info = {
                 "type": 'train',
-                "id": stop.id,
-                "name": get_train_station_name(stop.id),
+                "id": id,
+                "name": get_train_station_name(id),
             }
             cache.append(stop_info)
 
-            stop_info_with_departures = {**stop_info, "departures": get_train_departures_for_station_code(stop.id)}
+            stop_info_with_departures = {**stop_info, "departures": get_train_departures_for_station_code(id)}
             return stop_info_with_departures
-        elif stop.stop_type == 'tfl_bus':
-            stop_info = {
-                'type': 'tfl_bus',
-                "id": stop.id,
-                "name": get_bus_stop_name(stop.id)
-            }
-            cache.append(stop_info)
-
-            stop_info_with_departures = {**stop_info, "departures": get_tfl_departures(stop.id)}
-            return stop_info_with_departures
-
-        elif stop.stop_type == 'tfl_tube':
-            stop_info = {
-                'type': 'tfl_tube',
-                "id": stop.id,
-                "name": get_tube_station_name(stop.id),
-            }
-            cache.append(stop_info)
-
-            stop_info_with_departures = {**stop_info, "departures": get_tfl_departures(stop.id)}
-            return stop_info_with_departures
-
-        # We can continue adding other types of stop here...
-        else:
-            return {
-                'type': 'error',
-                'data': {
-                    'message': 'Stop type is not recognised!'
-                }
+    elif type == 'tfl_bus':
+        stop_info = {
+            'type': 'tfl_bus',
+            "id": id,
+            "name": get_bus_stop_name(id)
         }
+        cache.append(stop_info)
+
+        stop_info_with_departures = {**stop_info, "departures": get_tfl_departures(id)}
+        return stop_info_with_departures
+
+    elif type == 'tfl_tube':
+        stop_info = {
+            'type': 'tfl_tube',
+            "id": id,
+            "name": get_tube_station_name(id),
+        }
+        cache.append(stop_info)
+
+        stop_info_with_departures = {**stop_info, "departures": get_tfl_departures(id)}
+        return stop_info_with_departures
+
+    # We can continue adding other types of stop here...
+    else:
+        return {
+            'type': 'error',
+            'data': {
+                'message': 'Stop type is not recognised!'
+            }
+    }
+
+def get_departures_for_stop(id, type):
+    if type == 'train':
+        return get_train_departures_for_station_code(id)
+    elif type == 'tfl_bus' or type == 'tfl_tube':
+        return get_tfl_departures(id)
+    
 
 def find_stop_in_cache(id):
     for stop in cache:

@@ -94,27 +94,27 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
     if not stop:
         draw.text((5, 20), text="No stop information provided!", font=font14, anchor='lm', fill=black)
     elif stop['type'] == 'train':
-        departure_info.paste(draw_station_header(header_dimensions, stop['data'].station_name, nat_rail), (0, 0))
-        if len(stop['data'].departures) == 0:
+        departure_info.paste(draw_station_header(header_dimensions, stop['name'], nat_rail), (0, 0))
+        if len(stop['departures']) == 0:
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
-        for departure in stop['data'].departures:
+        for departure in stop['departures']:
             draw_departure(draw, departures_start_x, departure_y, departure.operator, departure.destination, departure.departure_time)
             departure_y += 15
     elif stop['type'] == 'tfl_bus':
-        departure_info.paste(draw_station_header(header_dimensions, stop['data']['name'], bus), (0, 0))
-        if len(stop['data']['departures']) == 0:
+        departure_info.paste(draw_station_header(header_dimensions, stop['name'], bus), (0, 0))
+        if len(stop['departures']) == 0:
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
-        for departure in stop['data']['departures']:
+        for departure in stop['departures']:
             draw_departure(draw, departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival)
             departure_y += 15
     elif stop['type'] == 'tfl_tube':
-        departure_info.paste(draw_station_header(header_dimensions, stop['data']['name'], lunderground), (0, 0))
-        if len(stop['data']['departures']) == 0:
+        departure_info.paste(draw_station_header(header_dimensions, stop['name'], lunderground), (0, 0))
+        if len(stop['departures']) == 0:
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
-        for departure in stop['data']['departures']:
+        for departure in stop['departures']:
             draw_departure(draw, departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival)
             departure_y += 15
         
