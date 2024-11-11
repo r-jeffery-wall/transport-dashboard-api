@@ -27,10 +27,16 @@ def parse_departure_json(json): #Parses the JSON data from TFL API into an objec
     arrivals = []
 
     for prediction in json:
-        arrivals.append(TfLArrival(prediction["lineName"], prediction["destinationName"], format_predicted_time(prediction["timeToStation"])))
+        arrivals.append(TfLArrival(prediction["lineName"], format_destination_name(prediction["destinationName"]), format_predicted_time(prediction["timeToStation"])))
 
 
     return arrivals
+
+def format_destination_name(name):
+    if "Underground Station" in name:
+        return name[:-19]
+    else:
+        return name
 
 def format_predicted_time(arrival_time):
     arrival_minutes = int(arrival_time / 60)
