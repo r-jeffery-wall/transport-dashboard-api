@@ -11,8 +11,6 @@ class TrainArrival(object):
 
 @dataclass
 class TrainDepartureBoard(object):
-    station_name: str
-    station_code: str
     departures: list
 
 load_dotenv()
@@ -24,6 +22,14 @@ api_password = os.environ["RTT_API_PASSWORD"]
 def format_departure_time(time):
     return f"{time[:2]}:{time[2:]}"
 
+def get_train_station_name(station):
+    request_url = base_url + station
+
+    request = requests.get(request_url, auth=(api_username, api_password))
+    data = request.json()
+
+    return data["location"]["name"]
+
 def get_train_departures_for_station_code(station):
     request_url = base_url + station
 
@@ -34,8 +40,6 @@ def get_train_departures_for_station_code(station):
 
 
 def parse_train_departure_json(json): #Parses the JSON data from RTT api into an object.
-    station_name = json["location"]["name"]
-    station_code = json["location"]["crs"]
     departures = []
 
     for arrival in json["services"]:
@@ -56,7 +60,7 @@ def parse_train_departure_json(json): #Parses the JSON data from RTT api into an
 
         departures.append(TrainArrival(operator_name, destination, departure_time))
 
-    return TrainDepartureBoard(station_name, station_code, departures)
+    return TrainDepartureBoard(departures)
 
 # For testing
 if __name__ == "__main__":
