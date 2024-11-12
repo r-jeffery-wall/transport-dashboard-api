@@ -20,6 +20,8 @@ black = (0, 0, 0)
 lunderground = Image.open(os.path.join(img_dir, 'LondonUnderground.png'))
 nat_rail = Image.open(os.path.join(img_dir, 'NatRail.png'))
 bus = Image.open(os.path.join(img_dir, 'bus.png'))
+walking = Image.open(os.path.join(img_dir, 'walking.png'))
+time = Image.open(os.path.join(img_dir, 'time.png'))
 
 def draw_dashboard(JSON_data):
     width, height = JSON_data['width'], JSON_data['height']
@@ -94,7 +96,7 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
     if not stop:
         draw.text((5, 20), text="No stop information provided!", font=font14, anchor='lm', fill=black)
     elif stop['type'] == 'train':
-        departure_info.paste(draw_station_header(header_dimensions, stop['name'], nat_rail), (0, 0))
+        departure_info.paste(draw_station_header(header_dimensions, stop['name'], stop['time_to_walk'], nat_rail), (0, 0))
         if len(stop['departures']) == 0:
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
@@ -102,7 +104,7 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
             draw_departure(draw, departures_start_x, departure_y, departure.operator, departure.destination, departure.departure_time)
             departure_y += 15
     elif stop['type'] == 'tfl_bus':
-        departure_info.paste(draw_station_header(header_dimensions, stop['name'], bus), (0, 0))
+        departure_info.paste(draw_station_header(header_dimensions, stop['name'], stop['time_to_walk'] ,bus), (0, 0))
         if len(stop['departures']) == 0:
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
@@ -110,7 +112,7 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
             draw_departure(draw, departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival)
             departure_y += 15
     elif stop['type'] == 'tfl_tube':
-        departure_info.paste(draw_station_header(header_dimensions, stop['name'], lunderground), (0, 0))
+        departure_info.paste(draw_station_header(header_dimensions, stop['name'], stop['time_to_walk'],lunderground), (0, 0))
         if len(stop['departures']) == 0:
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
@@ -129,11 +131,13 @@ def no_departures(dimensions):
 
     return message
 
-def draw_station_header(dimensions, station_name, logo):
+def draw_station_header(dimensions, station_name, time_to_station, logo):
     header = Image.new('RGB', dimensions, white)
     draw = ImageDraw.Draw(header)
 
     draw.text((5, 20), text=station_name, font=font16, anchor='lm', fill=black)
+    draw.text((215, 20), text=time_to_station, font=font16, anchor='lm', fill=black)
+    header.paste(walking, (240, 5))
     header.paste(logo, (280, 5))
 
     return header
