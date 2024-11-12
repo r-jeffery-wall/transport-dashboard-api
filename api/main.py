@@ -11,6 +11,7 @@ app = FastAPI()
 class StopDetails(BaseModel):
     stop_type: str
     id: str
+    coordinates: str | None
 
 class RawDataSettings(BaseModel):
     lat_long: str

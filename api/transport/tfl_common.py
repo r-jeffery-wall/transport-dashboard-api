@@ -49,6 +49,13 @@ def format_predicted_time(arrival_time):
         current_time = datetime.now()
         return (current_time + timedelta(minutes=arrival_minutes)).strftime('%H:%M')
 
+def get_tfl_latlong(stop):
+    request_url = base_url + stop
+
+    request = requests.get(request_url)
+    data = request.json()
+
+    return f"{data['lon']},{data['lat']}"
 
 # For testing:
 if __name__ == "__main__":

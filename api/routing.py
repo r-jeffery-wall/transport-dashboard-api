@@ -13,10 +13,12 @@ base_url = f"https://api.openrouteservice.org/v2/directions/foot-walking?api_key
 
 def get_travel_time_between_points(latlong_start, latlong_end):
     request_url = f"{base_url}&start={latlong_start}&end={latlong_end}"
+    print(request_url)
 
     request = requests.get(request_url)
     data = request.json()
 
+    print(data)
     time_seconds = data['features'][0]['properties']['summary']['duration']
     return round(time_seconds / 60)
 # For testing
