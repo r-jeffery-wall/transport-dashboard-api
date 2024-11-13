@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./__init__.py /code/__init__.py
 COPY ./api /code/api
+COPY ./api/stop_info_cache.json /code/
 COPY ./draw /code/draw
 
 CMD ["fastapi", "run", "api/main.py", "--port", "8001"]
