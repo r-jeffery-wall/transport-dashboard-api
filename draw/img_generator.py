@@ -150,8 +150,10 @@ def draw_departure(draw, image, x_pos, y_pos, line, destination, time_warning, t
     draw.text((x_pos + 280, y_pos), text=time, font=font12, anchor='lm', fill=black)
 
 def check_departure_with_walking_time(departure_time, time_to_walk):
-    time_to_walk_timestamp = datetime.now() + timedelta(minutes = int(time_to_walk))
+    time_to_walk_datetime = datetime.now() + timedelta(minutes = int(time_to_walk))
+    time_to_walk_timestamp = time_to_walk_datetime.time()
     departure_time_timestamp = parse_departure_time(departure_time)
+    print(time_to_walk_timestamp, departure_time_timestamp)
 
     if departure_time_timestamp < time_to_walk_timestamp:
         return True # Time warning will be shown
@@ -162,11 +164,12 @@ def check_departure_with_walking_time(departure_time, time_to_walk):
 def parse_departure_time(departure_time):
     if len(departure_time) <= 3: # This means the departure time is not already formatted in HH:MM format.
         if departure_time == 'due':
-            return datetime.now()
+            return datetime.now().time()
         else:
-            return datetime.now() + timedelta(minutes= int(departure_time))
+            time = datetime.now() + timedelta(minutes= int(departure_time))
+            return time.time()
     else:
-        return datetime.strptime(departure_time, '%H:%M')
+        return datetime.strptime(departure_time, '%H:%M').time()
 
 # For testing
 if __name__ == "__main__":

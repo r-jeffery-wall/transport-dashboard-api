@@ -18,7 +18,7 @@ def get_travel_time_between_points(latlong_start, latlong_end):
     data = request.json()
 
     time_seconds = data['features'][0]['properties']['summary']['duration']
-    return str(round(time_seconds / 60))
+    return str(round(time_seconds / 60) + 1) # We add one minute to walking time to give a bit of extra leeway.
 # For testing
 if __name__ == "__main__":
     print(get_travel_time_between_points("8.681495,49.41461", "8.687872,49.420318"))
