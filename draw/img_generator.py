@@ -1,4 +1,5 @@
 import os
+from datetime import date, datetime, timedelta
 import math
 from PIL import Image, ImageDraw, ImageFont
 
@@ -21,7 +22,6 @@ lunderground = Image.open(os.path.join(img_dir, 'LondonUnderground.png'))
 nat_rail = Image.open(os.path.join(img_dir, 'NatRail.png'))
 bus = Image.open(os.path.join(img_dir, 'bus.png'))
 walking = Image.open(os.path.join(img_dir, 'walking.png'))
-time = Image.open(os.path.join(img_dir, 'time.png'))
 
 def draw_dashboard(JSON_data):
     width, height = JSON_data['width'], JSON_data['height']
@@ -101,7 +101,7 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
         for departure in stop['departures']:
-            draw_departure(draw, departures_start_x, departure_y, departure.operator, departure.destination, departure.departure_time)
+            draw_departure(draw, departure_info, departures_start_x, departure_y, departure.operator, departure.destination, check_departure_with_walking_time(departure.departure_time, stop['time_to_walk']), departure.departure_time)
             departure_y += 15
     elif stop['type'] == 'tfl_bus':
         departure_info.paste(draw_station_header(header_dimensions, stop['name'], stop['time_to_walk'] ,bus), (0, 0))
@@ -109,7 +109,7 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
         for departure in stop['departures']:
-            draw_departure(draw, departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival)
+            draw_departure(draw, departure_info, departures_start_x, departure_y, departure.line, departure.destination, check_departure_with_walking_time(departure.time_to_arrival, stop['time_to_walk']), departure.time_to_arrival)
             departure_y += 15
     elif stop['type'] == 'tfl_tube':
         departure_info.paste(draw_station_header(header_dimensions, stop['name'], stop['time_to_walk'],lunderground), (0, 0))
@@ -117,7 +117,7 @@ def draw_departure_information_for_stop(dimensions, stop): # This function takes
             departure_info.paste(no_departures(header_dimensions), (departures_start_x, departures_start_y))
         departure_y = departures_start_y
         for departure in stop['departures']:
-            draw_departure(draw, departures_start_x, departure_y, departure.line, departure.destination, departure.time_to_arrival)
+            draw_departure(draw, departure_info, departures_start_x, departure_y, departure.line, departure.destination, check_departure_with_walking_time(departure.time_to_arrival, stop['time_to_walk']), departure.time_to_arrival)
             departure_y += 15
         
 
@@ -142,10 +142,31 @@ def draw_station_header(dimensions, station_name, time_to_station, logo):
 
     return header
 
-def draw_departure(draw, x_pos, y_pos, line, destination, time):
+def draw_departure(draw, image, x_pos, y_pos, line, destination, time_warning, time):
     draw.text((x_pos, y_pos), text=line, font=font12, anchor='lm', fill=black)
     draw.text((x_pos + 85, y_pos), text=destination, font=font12, anchor='lm', fill=black)
+    if time_warning:
+        draw.text((x_pos + 270, y_pos), text='!', font=font12, anchor='lm', fill=black)
     draw.text((x_pos + 280, y_pos), text=time, font=font12, anchor='lm', fill=black)
+
+def check_departure_with_walking_time(departure_time, time_to_walk):
+    time_to_walk_timestamp = datetime.now() + timedelta(minutes = int(time_to_walk))
+    departure_time_timestamp = parse_departure_time(departure_time)
+
+    if departure_time_timestamp < time_to_walk_timestamp:
+        return True # Time warning will be shown
+    else:
+        return False
+
+# Parses the departure time into a format for time/date comparison.
+def parse_departure_time(departure_time):
+    if len(departure_time) <= 3: # This means the departure time is not already formatted in HH:MM format.
+        if departure_time == 'due':
+            return datetime.now()
+        else:
+            return datetime.now() + timedelta(minutes= int(departure_time))
+    else:
+        return datetime.strptime(departure_time, '%H:%M')
 
 # For testing
 if __name__ == "__main__":
