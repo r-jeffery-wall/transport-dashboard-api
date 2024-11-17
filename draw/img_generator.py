@@ -136,9 +136,9 @@ def draw_station_header(dimensions, station_name, time_to_station, logo):
     draw = ImageDraw.Draw(header)
 
     draw.text((5, 20), text=station_name, font=font16, anchor='lm', fill=black)
-    draw.text((215, 20), text=time_to_station, font=font16, anchor='lm', fill=black)
-    header.paste(walking, (240, 5))
-    header.paste(logo, (280, 5))
+    draw.text((205, 20), text=time_to_station + " min", font=font16, anchor='lm', fill=black)
+    header.paste(walking, (255, 5))
+    header.paste(logo, (290, 5))
 
     return header
 
