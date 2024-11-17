@@ -153,7 +153,6 @@ def check_departure_with_walking_time(departure_time, time_to_walk):
     time_to_walk_datetime = datetime.now() + timedelta(minutes = int(time_to_walk))
     time_to_walk_timestamp = time_to_walk_datetime.time()
     departure_time_timestamp = parse_departure_time(departure_time)
-    print(time_to_walk_timestamp, departure_time_timestamp)
 
     if departure_time_timestamp < time_to_walk_timestamp:
         return True # Time warning will be shown
