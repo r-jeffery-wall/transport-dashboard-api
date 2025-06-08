@@ -13,7 +13,7 @@ def get_tube_station_name(stop):
 
     if "Undergound Station" in data["commonName"]:
         return data["commonName"][:-19] # The TfL API appends 'Undergound Station' to tube station names. We don't want this so remove it from the string returned from the API.
-    elif "Rail Station" in data["CommonName"]:
+    elif "Rail Station" in data["commonName"]:
         return data["commonName"][:12]
     else:
         return data["commonName"]
