@@ -11,7 +11,12 @@ def get_tube_station_name(stop):
     request = requests.get(request_url)
     data = request.json()
 
-    return data["commonName"][:-19] # The TfL API appends 'Undergound Station' to tube station names. We don't want this so remove it from the string returned from the API.
+    if "Undergound Station" in data["commonName"]:
+        return data["commonName"][:-19] # The TfL API appends 'Undergound Station' to tube station names. We don't want this so remove it from the string returned from the API.
+    elif "Rail Station" in data["CommonName"]:
+        return data["commonName"][:12]
+    else:
+        return data["commonName"]
 
 # For testing:
 if __name__ == "__main__":
