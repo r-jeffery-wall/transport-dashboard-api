@@ -35,7 +35,7 @@ def parse_departure_json(json): #Parses the JSON data from TFL API into an objec
 def format_destination_name(name):
     if "Underground Station" in name:
         return name[:-19]
-    elif "Rail Station" in data["commonName"]:
+    elif "Rail Station" in name:
         return name[:12]
     else:
         return name
