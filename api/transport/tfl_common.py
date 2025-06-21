@@ -36,7 +36,7 @@ def format_destination_name(name):
     if "Underground Station" in name:
         return name[:-19]
     elif "Rail Station" in name:
-        return name[:12]
+        return name[:-12]
     else:
         return name
 
